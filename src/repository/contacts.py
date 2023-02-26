@@ -71,7 +71,6 @@ async def get_contacts_birthdays(user: User, db: Session) -> List[ContactsRespon
     return contacts
 
 async def filtered_contacts(firstname: str | None , lastname: str | None, email: str | None, user: User, db: Session) -> List[ContactsResponse]:
-    print(firstname)
     list_reg = []
     if firstname:
         list_reg.append(Contact.firstname.ilike(f"%{firstname}%"))

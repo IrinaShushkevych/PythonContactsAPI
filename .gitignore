@@ -3,6 +3,7 @@ __pycache__/
 .idea/
 *.py[cod]
 *$py.class
+postgres-data/
 
 # C extensions
 *.so
