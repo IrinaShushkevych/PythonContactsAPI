@@ -22,6 +22,17 @@ conf = ConnectionConfig(
 
 
 async def send_mail_verify(email: EmailStr, username: str, host: str):
+    """
+    Send verification email for specific user.
+    :param email: The user e-mail.
+    :type email: str
+    :param username: The name of user.
+    :type username: str
+    :param host: A host.
+    :type host: str
+    :return: None.
+    :rtype: None.
+    """
     try:
         token = await auth_service.create_email_token({'sub': email})
         message = MessageSchema(
@@ -37,6 +48,17 @@ async def send_mail_verify(email: EmailStr, username: str, host: str):
 
 
 async def send_mail_password(email: EmailStr, username: str, host: str):
+    """
+    Send email for change password specific user.
+    :param email: The user e-mail.
+    :type email: str
+    :param username: The name of user.
+    :type username: str
+    :param host: A host.
+    :type host: str
+    :return: None.
+    :rtype: None.
+    """
     try:
         token = await auth_service.create_email_token({'sub': email})
         message = MessageSchema(

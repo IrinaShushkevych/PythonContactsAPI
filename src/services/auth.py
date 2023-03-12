@@ -8,8 +8,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 import pickle
 
-
-from src.repository import  auth as repository_auth
+from src.repository import auth as repository_auth
 from src.database.connect import get_db
 from src.conf.config import settings
 
@@ -22,9 +21,24 @@ class Auth:
     auth_redis = redis.Redis(host=settings.redis_host, port=settings.redis_port, db=settings.redis_db)
 
     def create_password_hash(self, password: str):
+        """
+        Create hash password.
+        :param password: A password.
+        :type password: str
+        :return: Hashed password.
+        :rtype: str
+        """
         return self.pwd_context.hash(password)
 
     def verify_password_hash(self, password: str, hashed_password: str):
+        """
+        Verify hash password
+        :param password: A password.
+        :type password: str
+        :param hashed_password: A hash password.
+        :return: Result of verification hash password with password.
+        :rtype: True | False
+        """
         return self.pwd_context.verify(password, hashed_password)
 
     async def create_access_token(self, data: dict, expires_delta: Optional[float] = None):
