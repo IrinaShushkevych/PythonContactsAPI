@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 from libgravatar import Gravatar
 
-from src import User, UserModel
+from src.database.models import User
+from src.schemas import UserModel
 
 
 async def get_user_by_email(email: str, db: Session) -> User | None:
@@ -84,8 +85,9 @@ async def update_avatar(email: str, avatar_url: str, db: Session) -> User:
     :rtype: User
     """
     user = await get_user_by_email(email, db)
-    user.avatar = avatar_url
-    db.commit()
+    if user:
+        user.avatar = avatar_url
+        db.commit()
     return user
 
 
@@ -102,6 +104,7 @@ async def update_password(email: str, password: str, db: Session) -> User:
     :rtype: User
     """
     user = await get_user_by_email(email, db)
-    user.password = password
-    db.commit()
+    if user:
+        user.password = password
+        db.commit()
     return user

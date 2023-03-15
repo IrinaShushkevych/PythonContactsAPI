@@ -5,17 +5,21 @@ from fastapi_limiter.depends import RateLimiter
 import cloudinary
 import cloudinary.uploader
 
-from src import get_db, UserModel, UserResponse, TokenModel, repository_auth, User, RequestEmail
+from src.schemas import UserModel, UserResponse, TokenModel, RequestEmail
+from src.database.models import User
 from src.services.auth import auth_service
 from src.services.email import send_mail_verify
 from src.conf.config import settings
+import src.repository.auth as repository_auth
+from src.database.connect import get_db
 
 router = APIRouter(prefix='/auth', tags=["auth"])
 security = HTTPBearer()
 
 
 @router.post('/signup', response_model=UserResponse, description='No more than 5 requests per minute',
-             dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_201_CREATED)
+             status_code=status.HTTP_201_CREATED)
+# dependencies = [Depends(RateLimiter(times=5, seconds=60))], status_code = status.HTTP_201_CREATED)
 async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Request, db: Session = Depends(get_db)):
     """
     The signup function creates a new user in the database.
@@ -39,7 +43,8 @@ async def signup(body: UserModel, background_tasks: BackgroundTasks, request: Re
 
 
 @router.post('/login', response_model=TokenModel, description='No more than 5 requests per minute',
-             dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_201_CREATED)
+             status_code=status.HTTP_200_OK)
+             # dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_201_CREATED)
 async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """
     The login function is used to authenticate a user.
@@ -68,7 +73,8 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: Session = Depen
 
 
 @router.get('/refresh_token', response_model=TokenModel, description='No more than 5 requests per minute',
-            dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK)
+            # dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_200_OK)
 async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(security), db: Session = Depends(get_db)):
     """
     The refresh_token function is used to refresh the access token.
@@ -94,7 +100,8 @@ async def refresh_token(credentials: HTTPAuthorizationCredentials = Security(sec
 
 
 @router.get('/logout', response_model=UserResponse, description='No more than 5 requests per minute',
-            dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK)
+            # dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_200_OK)
 async def logout(current_user: User = Depends(auth_service.get_current_user),
                  db: Session = Depends(get_db)):
     """
@@ -113,14 +120,15 @@ async def logout(current_user: User = Depends(auth_service.get_current_user),
 
 
 @router.get('/confirmed_email/{token}', description='No more than 5 requests per minute',
-            dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_200_OK)
+            status_code=status.HTTP_200_OK)
+            # dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_200_OK)
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
     """
-    The confirmed_email function is used to confirm a user's email address.
-        It takes the token from the URL and uses it to get the user's email address.
-        The function then checks if there is a user with that email in our database, and if not, returns an error message.
-        If there is a user with that email in our database, we check whether their account has already been confirmed or not.
-            If it has been confirmed already, we return another error message saying so; otherwise we confirm their account.
+    The confirmed email function is used to confirm a user's email address. It takes the token from the URL and uses
+    it to get the user's email address. The function then checks if there is a user with that email in our database,
+    and if not, returns an error message. If there is a user with that email in our database, we check whether their
+    account has already been confirmed or not. If it has been confirmed already, we return another error message
+    saying so; otherwise we confirm their account.
 
     :param token: str: Get the token from the url
     :param db: Session: Get the database session
@@ -136,8 +144,8 @@ async def confirmed_email(token: str, db: Session = Depends(get_db)):
     return {'message': 'Email confirmed'}
 
 
-@router.post('/request_email', description='No more than 5 requests per minute',
-             dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_200_OK)
+@router.post('/request_email', description='No more than 5 requests per minute', status_code=status.HTTP_200_OK)
+             # dependencies=[Depends(RateLimiter(times=5, seconds=60))], status_code=status.HTTP_200_OK)
 async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, request: Request,
                         db: Session = Depends(get_db)):
     """

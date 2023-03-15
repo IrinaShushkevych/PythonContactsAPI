@@ -5,8 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 
-
-from src import router_contacts, router_auth, router_users
+from src.routes.auth import router as router_auth
+from src.routes.contacts import router as router_contacts
+from src.routes.users import router as router_users
 from src.conf.config import settings
 
 app = FastAPI()

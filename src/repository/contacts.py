@@ -1,8 +1,10 @@
 from typing import List
 from sqlalchemy import or_, and_
 from sqlalchemy.orm import Session
-from src import Contact, ContactsResponse, ContactsModel, ContactsNotes, ContactsBirthday, User
 from datetime import datetime, timedelta
+
+from src.database.models import User, Contact
+from src.schemas import ContactsResponse, ContactsModel, ContactsNotes, ContactsBirthday
 
 
 async def get_contacts(skip: int, limit: int, user: User, db: Session) -> List[ContactsResponse]:
